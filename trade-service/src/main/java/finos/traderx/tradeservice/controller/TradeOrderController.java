@@ -27,7 +27,8 @@ public class TradeOrderController {
     private final AccountValidationService accountValidationService;
     @Autowired
     private Publisher<TradeOrder> tradePublisher;
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
     @Value("${reference.data.service.url}")
     private String referenceDataServiceAddress;
     @Value("${account.service.url}")
