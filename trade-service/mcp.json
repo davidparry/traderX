@@ -7,7 +7,7 @@
         "mcp-shell-server"
       ],
       "env": {
-        "ALLOW_COMMANDS": "ls,cat,pwd,rg,wc,touch,find,mkdir,rm,cp,mv,npm,npx,jest,mocha,ts-node,tsc,node,jq,echo,test,diff,sed,awk,git,cd,exit,yarn, grep"
+        "ALLOW_COMMANDS": "ls,cat,pwd,rg,wc,touch,find,mkdir,rm,cp,mv,npm,npx,jest,mocha,ts-node,tsc,node,jq,echo,test,diff,sed,awk,git,cd,exit,yarn, grep, ./gradlew"
       }
     },
     "scout-server": {
