@@ -1,0 +1,7 @@
+version = "1.0"
+model = "claude-4-sonnet"
+#model = "gpt-4.1"
+imports = [
+    "agents/create_tests.toml",
+    "agents/create_package_tests.toml"
+]

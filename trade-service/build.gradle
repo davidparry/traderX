@@ -7,8 +7,11 @@
 
 plugins {
   id 'java'
+  id 'groovy'
   id 'org.springframework.boot' version '3.3.7'
   id 'io.spring.dependency-management' version '1.1.7'
+  id 'com.coditory.integration-test' version '1.4.5'
+  id 'jacoco'
 }
 
 group = 'finos.traderx.trade-service'
@@ -41,8 +44,30 @@ dependencies {
 	}
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
+	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
+	testImplementation 'org.apache.groovy:groovy:4.0.20'
+	testImplementation 'org.objenesis:objenesis:3.4'
+
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+
+
+
+
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }

@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+
+    "shell": {
+      "command": "uvx",
+      "args": [
+        "mcp-shell-server"
+      ],
+      "env": {
+        "ALLOW_COMMANDS": "ls,cat,pwd,rg,wc,touch,find,mkdir,rm,cp,mv,npm,npx,jest,mocha,ts-node,tsc,node,jq,echo,test,diff,sed,awk,git,cd,exit,yarn, grep"
+      }
+    },
+    "scout-server": {
+      "command": "/Users/davidparry/code/github/mcp-servers/build-scout/build/native/nativeCompile/scout",
+      "args": [],
+      "env": {
+        "BUILD_SCOUT_LOGGING": "DEBUG"
+      }
+    }
+
+
+  }
+}
