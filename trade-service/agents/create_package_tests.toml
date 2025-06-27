@@ -11,13 +11,7 @@ instructions = """
 ## Overview
 These instructions guide the systematic creation of tests for Java projects without existing test coverage, using the Spock Framework for behavior-driven testing in Groovy. The process leverages the scout-server MCP tools for building, testing, and coverage reporting.
 
-## Required Arguments
-- **package_name**: The specific package to create tests for (e.g., "com.company.project.service")
-  - This argument will be provided when invoking these instructions
-  - Focus all test creation efforts on classes within this specified package
-  - Tests should be created in the corresponding test package structure
-
-**IMPORTANT**: These instructions should be applied specifically to create tests for the package specified in the `package_name` argument. Focus your test creation efforts on classes within the provided package name (e.g., if package_name is "com.company.project.service", create tests for all classes in that package).
+**IMPORTANT**: These instructions should be applied EXCLUSIVELY to create tests for the package specified in the `{package_name}` argument. Focus your test creation efforts ONLY on classes within the provided package name (e.g., if {package_name} is "com.company.project.service", create tests ONLY for classes in that specific package, not for any other packages).
 
 ## Critical Tool Usage Instructions
 
@@ -28,8 +22,8 @@ These instructions guide the systematic creation of tests for Java projects with
 ### Primary Tools (Use These First):
 
 - **For running unit tests and Jacoco coverage**:
-  - ✅ PRIMARY: `scout-server:gradle_tester` - Use for standard test execution
-  - ✅ PRIMARY: `scout-server:gradle_jacoco_coverage_reporter` - Use for coverage analysis
+  - ✅ PRIMARY: `gradle_tester` tool - Use for standard test execution in place of this shell command ./gradlew check
+  - ✅ PRIMARY: `gradle_jacoco_coverage_reporter` tool - Use for coverage analysis in place of this shell command ./gradlew jacocoTestReport
 
 ### Alternative Tools (For Specific Use Cases):
 
@@ -75,19 +69,19 @@ Other tools may be appropriate for:
 ## Phase 1: ANALYSIS PHASE
 
 ### Objectives
-- Map the complete codebase architecture
+- Map the existing package {package_name}
 - Identify testing priorities based on business criticality
 - Document technical dependencies
 - **Analyze existing tests to understand established patterns**
 
 ### Steps
 1. **Codebase Scanning**
-   - Identify all packages and their purposes
-   - Map class relationships and dependencies
-   - Document external dependencies (databases, APIs, message queues)
-   - Identify entry points (controllers, main methods, scheduled tasks)
-   - **Document existing package structure for mirror test organization**
-   - **Catalog existing test files and their coverage**
+   - Identify ONLY the package {package_name} and its classes
+   - Map class relationships and dependencies WITHIN {package_name}
+   - Document external dependencies used by classes in {package_name}
+   - Identify entry points WITHIN {package_name} (controllers, main methods, scheduled tasks)
+   - **Document existing package structure for {package_name} for mirror test organization**
+   - **Catalog existing test files for {package_name} and their coverage**
 
 2. **Initial Coverage Assessment**
    ```
@@ -99,43 +93,43 @@ Other tools may be appropriate for:
    # For non-Gradle projects or specialized coverage tools,
    # document the specific requirement and use appropriate alternative
    ```
-   - Document baseline coverage metrics
-   - Identify which packages have zero coverage
-   - Identify packages that don't meet target coverage thresholds:
-     - domain/: Below 90% (critical business logic)
-     - service/: Below 80% (orchestration layer)
-     - repository/: Below 70% (data access layer)
-     - controller/: Below 75% (API layer)
-     - util/: Below 85% (utility functions)
-   - Save coverage report for comparison
+   - Document baseline coverage metrics FOR {package_name} ONLY
+   - Identify if {package_name} has zero coverage
+   - Check if {package_name} meets its target coverage threshold based on package type:
+     - If {package_name} ends with .domain: 90% target (critical business logic)
+     - If {package_name} ends with .service: 80% target (orchestration layer)
+     - If {package_name} ends with .repository: 70% target (data access layer)
+     - If {package_name} ends with .controller: 75% target (API layer)
+     - If {package_name} ends with .util: 85% target (utility functions)
+   - Save coverage report for {package_name} for comparison
 
 3. **Existing Test Analysis**
-   - **Identify Existing Tests**: Scan for any existing Spec files
-   - **Pattern Recognition**: Document testing patterns already in use
-   - **Coverage Gaps**: Identify which classes have tests and which don't
-   - **Quality Assessment**: Evaluate existing test quality and completeness
-   - **Style Guide Extraction**: Note naming conventions, structure preferences
+   - **Identify Existing Tests**: Scan for any existing Spec files FOR {package_name} ONLY
+   - **Pattern Recognition**: Document testing patterns already in use for {package_name}
+   - **Coverage Gaps**: Identify which classes in {package_name} have tests and which don't
+   - **Quality Assessment**: Evaluate existing test quality and completeness for {package_name}
+   - **Style Guide Extraction**: Note naming conventions, structure preferences used in {package_name} tests
 
 4. **Component Classification**
-   - **Core Business Logic**: Pure functions, domain models, calculators
-   - **Infrastructure Code**: Database repositories, external API clients
-   - **Orchestration Layer**: Services that coordinate multiple components
-   - **Utilities**: Helper classes, common utilities
+   - **Core Business Logic**: Pure functions, domain models, calculators IN {package_name}
+   - **Infrastructure Code**: Database repositories, external API clients IN {package_name}
+   - **Orchestration Layer**: Services that coordinate multiple components IN {package_name}
+   - **Utilities**: Helper classes, common utilities IN {package_name}
 
 5. **Risk Assessment**
-   - High-risk components (payment processing, data validation, security)
-   - High-usage components (called by many other components)
-   - Complex components (high cyclomatic complexity)
-   - Components with frequent changes (check git history)
+   - High-risk components IN {package_name} (payment processing, data validation, security)
+   - High-usage components IN {package_name} (called by many other components)
+   - Complex components IN {package_name} (high cyclomatic complexity)
+   - Components IN {package_name} with frequent changes (check git history)
 
 6. **Deliverables**
-   - Component dependency graph
-   - Prioritized testing order list
-   - Risk assessment matrix
-   - Complexity metrics per component
-   - **Package structure mapping document**
-   - **Existing test pattern documentation**
-   - **Coverage gap analysis report (from scout-server)**
+   - Component dependency graph FOR {package_name}
+   - Prioritized testing order list FOR {package_name} classes
+   - Risk assessment matrix FOR {package_name} components
+   - Complexity metrics per component IN {package_name}
+   - **Package structure mapping document FOR {package_name}**
+   - **Existing test pattern documentation FOR {package_name}**
+   - **Coverage gap analysis report FOR {package_name} (from scout-server)**
 
 ## Phase 2: PLANNING PHASE
 
@@ -147,7 +141,7 @@ Other tools may be appropriate for:
 
 ### Steps
 1. **Test Case Design per Component**
-   For each component, document:
+   For each component IN {package_name}, document:
    - Happy path scenarios
    - Edge cases (null, empty, boundary values)
    - Error scenarios (exceptions, invalid inputs)
@@ -203,13 +197,14 @@ Other tools may be appropriate for:
 
 ### Steps
 1. **Existing Test Enhancement**
-   - **Review Current Tests**: Analyze existing Spec files
-   - **Identify Missing Scenarios**: Add test cases for uncovered paths
-   - **Refactor If Needed**: Improve existing tests while maintaining their intent
-   - **Preserve Working Tests**: Don't break existing passing tests
-   - **Extract Common Patterns**: Create shared utilities from repeated code
+   - **Review Current Tests**: Analyze existing Spec files FOR {package_name} ONLY
+   - **Identify Missing Scenarios**: Add test cases for uncovered paths IN {package_name}
+   - **Refactor If Needed**: Improve existing tests IN {package_name} while maintaining their intent
+   - **Preserve Working Tests**: Don't break existing passing tests IN {package_name}
+   - **Extract Common Patterns**: Create shared utilities from repeated code IN {package_name} tests
 
 2. **Project Structure Setup - Mirroring Source Packages**
+   Create test structure ONLY for {package_name}. For example, if {package_name} is "com.company.project.service":
    ```
    src/
    ├── main/
@@ -217,31 +212,17 @@ Other tools may be appropriate for:
    │       └── com/
    │           └── company/
    │               └── project/
-   │                   ├── domain/
-   │                   │   ├── User.java
-   │                   │   └── Order.java
-   │                   ├── service/
-   │                   │   ├── UserService.java
-   │                   │   └── OrderService.java
-   │                   ├── repository/
-   │                   │   └── UserRepository.java
-   │                   └── util/
-   │                       └── ValidationUtil.java
+   │                   └── service/          # Focus ONLY on this package
+   │                       ├── UserService.java
+   │                       └── OrderService.java
    └── test/
        └── groovy/
            └── com/
                └── company/
                    └── project/
-                       ├── domain/
-                       │   ├── UserSpec.groovy
-                       │   └── OrderSpec.groovy
-                       ├── service/
-                       │   ├── UserServiceSpec.groovy
-                       │   └── OrderServiceSpec.groovy
-                       ├── repository/
-                       │   └── UserRepositorySpec.groovy
-                       └── util/
-                           └── ValidationUtilSpec.groovy
+                       └── service/      # Create tests ONLY for this package
+                           ├── UserServiceSpec.groovy
+                           └── OrderServiceSpec.groovy
    ```
 
 3. **Package Structure Rules**
@@ -416,7 +397,7 @@ This phase requires frequent test execution. **Use scout-server tools as primary
    # - Branch coverage visualization
    # - Language-specific coverage (non-Java)
    ```
-   - Parse XML report to verify each source package has corresponding test package
+   - Parse XML report to verify {package_name} source package has corresponding test package {package_name}
    - Check coverage metrics per package against targets:
      - domain/: 90% target
      - service/: 80% target
@@ -727,4 +708,3 @@ Always document why an alternative tool was chosen over the primary scout-server
 """
 
 available_tools = ["filesystem", "shell", "scout-server"]
-arguments = []
