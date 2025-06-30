@@ -368,6 +368,122 @@ class SocketIOJSONPublisherSpec extends Specification {
         socket instanceof Socket
     }
 
+    def "should handle concurrent publishing"() {
+        given: "publisher is connected"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        publisher.socket = mockSocket
+        def messages = (1..10).collect { new TestMessage(id: it, data: "message-${it}") }
+        
+        when: "publishing multiple messages concurrently"
+        def threads = messages.collect { message ->
+            Thread.start {
+                publisher.publish(message)
+            }
+        }
+        threads*.join()
+        
+        then: "all messages are published"
+        10 * mockSocket.emit("publish", _)
+    }
+    
+    def "should handle very large messages"() {
+        given: "publisher is connected"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        publisher.socket = mockSocket
+        def largeData = "x" * 10000 // 10KB string
+        def largeMessage = new TestMessage(id: 1, data: largeData)
+        
+        when: "publishing large message"
+        publisher.publish(largeMessage)
+        
+        then: "message is serialized and published"
+        1 * mockSocket.emit("publish", _)
+    }
+    
+    def "should handle null topic in publish method"() {
+        given: "publisher is connected"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        publisher.socket = mockSocket
+        def message = new TestMessage(id: 1, data: "test")
+        
+        when: "publishing with null topic"
+        publisher.publish(null, message)
+        
+        then: "message is published with null topic"
+        1 * mockSocket.emit("publish", _)
+    }
+    
+    def "should handle empty string topic"() {
+        given: "publisher is connected"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        publisher.socket = mockSocket
+        def message = new TestMessage(id: 1, data: "test")
+        
+        when: "publishing with empty topic"
+        publisher.publish("", message)
+        
+        then: "message is published with empty topic"
+        1 * mockSocket.emit("publish", _)
+    }
+    
+    def "should handle special characters in topic"() {
+        given: "publisher is connected"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        publisher.socket = mockSocket
+        def message = new TestMessage(id: 1, data: "test")
+        
+        when: "publishing with special character topic"
+        publisher.publish("/topic/with/special-chars_123!@#", message)
+        
+        then: "message is published successfully"
+        1 * mockSocket.emit("publish", _)
+    }
+    
+    def "should handle afterPropertiesSet exception scenarios"() {
+        given: "publisher that will fail during setup"
+        publisher.shouldFailConnection = true
+        
+        when: "afterPropertiesSet is called"
+        publisher.afterPropertiesSet()
+        
+        then: "exception is thrown"
+        thrown(Exception)
+    }
+    
+    def "should handle socket emit exceptions"() {
+        given: "publisher is connected with failing socket"
+        ReflectionTestUtils.setField(publisher, "connected", true)
+        def failingSocket = Mock(Socket) {
+            emit(_, _) >> { throw new RuntimeException("Socket emit failed") }
+        }
+        publisher.socket = failingSocket
+        def message = new TestMessage(id: 1, data: "test")
+        
+        when: "publishing message that causes socket to fail"
+        publisher.publish(message)
+        
+        then: "exception is handled gracefully"
+        notThrown(Exception) // The implementation catches and prints stack trace
+    }
+    
+    def "should handle custom IO options"() {
+        given: "publisher with custom IO options"
+        def customPublisher = new TestSocketIOJSONPublisher() {
+            @Override
+            protected IO.Options getIOOptions() {
+                def options = new IO.Options()
+                options.timeout = 5000
+                return options
+            }
+        }
+        
+        when: "getting IO options"
+        def options = customPublisher.getIOOptions()
+        
+        then: "custom options are returned"
+        options.timeout == 5000
+    }
+
     // Real implementation to test actual internalConnect method
     static class RealSocketIOJSONPublisher extends SocketIOJSONPublisher<TestMessage> {
         // Uses the real internalConnect method from parent class

@@ -232,6 +232,65 @@ class SocketIOEnvelopeSpec extends Specification {
         envelope.getPayload() == "builder payload"
     }
 
+    def "should handle date field immutability"() {
+        given: "an envelope with a date"
+        def envelope = new SocketIOEnvelope()
+        def originalDate = envelope.getDate()
+        
+        when: "trying to modify the returned date"
+        def returnedDate = envelope.getDate()
+        returnedDate.setTime(0) // Try to modify
+        
+        then: "original date in envelope is affected (no defensive copy)"
+        envelope.getDate().getTime() == 0
+        // This documents that the implementation doesn't provide defensive copying
+        // which could be a potential issue in production code
+    }
+    
+    def "should handle toString representation"() {
+        given: "an envelope with data"
+        def envelope = new SocketIOEnvelope("/test", "payload")
+        envelope.setFrom("sender")
+        
+        when: "converting to string"
+        def stringRep = envelope.toString()
+        
+        then: "string representation is available"
+        stringRep != null
+        stringRep.contains("SocketIOEnvelope")
+    }
+    
+    def "should handle equals and hashCode"() {
+        given: "two envelopes with same data"
+        def envelope1 = new SocketIOEnvelope("/test", "payload")
+        def envelope2 = new SocketIOEnvelope("/test", "payload")
+        
+        expect: "default equals behavior (reference equality)"
+        envelope1 != envelope2 // No custom equals implementation
+        envelope1.hashCode() != envelope2.hashCode() // Default hashCode
+    }
+    
+    def "should handle concurrent access patterns"() {
+        given: "an envelope"
+        def envelope = new SocketIOEnvelope()
+        def results = []
+        
+        when: "accessing from multiple threads"
+        def threads = (1..10).collect { i ->
+            Thread.start {
+                envelope.setTopic("/topic-${i}")
+                envelope.setPayload("payload-${i}")
+                results << envelope.getTopic()
+            }
+        }
+        threads*.join()
+        
+        then: "operations complete without exceptions"
+        results.size() == 10
+        // Note: This test documents that the class is not thread-safe
+        // The final state is unpredictable due to race conditions
+    }
+
     // Helper class for testing
     static class TestPayload {
         int id
