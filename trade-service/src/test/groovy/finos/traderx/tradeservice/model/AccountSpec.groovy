@@ -36,7 +36,7 @@ class AccountSpec extends Specification {
         -1   | "Invalid Account"
         null | null
         1001 | ""
-        2002 | "Account with Special Characters !@#\$%"
+        2002 | "Account with Special Characters !@#\\\$%"
     }
 
     def "should handle null values in constructor gracefully"() {
@@ -117,7 +117,7 @@ class AccountSpec extends Specification {
         expect: "Account handles different display name formats"
         def shortName = new Account(1, "A")
         def longName = new Account(2, "Very Long Account Display Name With Many Words")
-        def specialChars = new Account(3, "Account!@#\$%^&*()")
+        def specialChars = new Account(3, "Account!@#\\\$%^&*()")
         def numbersInName = new Account(4, "Account123")
         def spacesName = new Account(5, "   Spaces   ")
 
