@@ -605,4 +605,25 @@ class SocketIOJSONSubscriberSpec extends Specification {
             receivedMessage = message
         }
     }
+
+    @Unroll
+    def "should cover publish listener paths: #scenario"() {
+        given: "a TestSocketIOJSONSubscriber with mocked socket listeners"
+        def sub = new TestSocketIOJSONSubscriber(TestMessage.class)
+        def listeners = setupListenersForSubscriber(sub)
+
+        when: "publish listener is invoked with payload"
+        listeners['publish'].call(payload)
+
+        then: "verify outcome"
+        (sub.receivedEnvelope != null) == envelopeExpected
+        (sub.receivedMessage != null) == messageExpected
+
+        where:
+        scenario                | payload                                                                                                   | envelopeExpected | messageExpected
+        "correct type"         | new JSONObject([type: "TestMessage", topic: "/test", payload: [id: 1, data: "hello"]])                    | true             | true
+        "system message"       | new JSONObject([type: "SystemMessage", topic: "/system", payload: "maintenance"])                        | false            | false
+        "non JSONObject input"| "not a json object"                                                                                          | false            | false
+        "deserialization error"| new JSONObject([type: "TestMessage", topic: "/test", payload: "invalid format that breaks mapping"])   | true             | true
+    }
 }
