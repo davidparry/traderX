@@ -354,4 +354,22 @@ class SocketIOJSONPublisherSpec extends Specification {
             return this // Circular reference causes serialization issues
         }
     }
+
+    def "should test real internalConnect method"() {
+        given: "a real publisher implementation"
+        def realPublisher = new RealSocketIOJSONPublisher()
+        def uri = URI.create("http://localhost:3000")
+
+        when: "calling real internalConnect"
+        def socket = realPublisher.internalConnect(uri)
+
+        then: "socket is created"
+        socket != null
+        socket instanceof Socket
+    }
+
+    // Real implementation to test actual internalConnect method
+    static class RealSocketIOJSONPublisher extends SocketIOJSONPublisher<TestMessage> {
+        // Uses the real internalConnect method from parent class
+    }
 }

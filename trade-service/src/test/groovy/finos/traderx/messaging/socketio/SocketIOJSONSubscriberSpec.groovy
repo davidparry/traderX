@@ -484,4 +484,29 @@ class SocketIOJSONSubscriberSpec extends Specification {
         Integer id
         String data
     }
+
+    def "should test real internalConnect method"() {
+        given: "a real subscriber implementation"
+        def realSubscriber = new RealSocketIOJSONSubscriber(TestMessage.class)
+        def uri = URI.create("http://localhost:3000")
+
+        when: "calling real internalConnect"
+        def socket = realSubscriber.internalConnect(uri)
+
+        then: "socket is created with event listeners"
+        socket != null
+        socket instanceof Socket
+    }
+
+    // Real implementation to test actual internalConnect method
+    static class RealSocketIOJSONSubscriber extends SocketIOJSONSubscriber<TestMessage> {
+        RealSocketIOJSONSubscriber(Class<TestMessage> typeClass) {
+            super(typeClass)
+        }
+
+        @Override
+        void onMessage(Envelope<?> envelope, TestMessage message) {
+            // Implementation for testing
+        }
+    }
 }
