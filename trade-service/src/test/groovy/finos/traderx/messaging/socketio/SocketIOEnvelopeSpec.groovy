@@ -269,8 +269,9 @@ class SocketIOEnvelopeSpec extends Specification {
         envelope1 != envelope2 // No custom equals implementation
         envelope1.hashCode() != envelope2.hashCode() // Default hashCode
     }
-    
-    def "should handle concurrent access patterns"() {
+
+    // The class under test is not thread-safe, so we document this behavior
+    def "THIS TEST WILL FAIL due to final state is unpredictable due to race conditions"() {
         given: "an envelope"
         def envelope = new SocketIOEnvelope()
         def results = []
