@@ -270,27 +270,6 @@ class SocketIOEnvelopeSpec extends Specification {
         envelope1.hashCode() != envelope2.hashCode() // Default hashCode
     }
 
-    // The class under test is not thread-safe, so we document this behavior
-    def "THIS TEST WILL FAIL due to final state is unpredictable due to race conditions"() {
-        given: "an envelope"
-        def envelope = new SocketIOEnvelope()
-        def results = []
-        
-        when: "accessing from multiple threads"
-        def threads = (1..10).collect { i ->
-            Thread.start {
-                envelope.setTopic("/topic-${i}")
-                envelope.setPayload("payload-${i}")
-                results << envelope.getTopic()
-            }
-        }
-        threads*.join()
-        
-        then: "operations complete without exceptions"
-        results.size() == 10
-        // Note: This test documents that the class is not thread-safe
-        // The final state is unpredictable due to race conditions
-    }
 
     // Helper class for testing
     static class TestPayload {
