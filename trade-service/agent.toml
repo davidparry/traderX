@@ -5,6 +5,5 @@ model = "claude-4-sonnet"
 
 imports = [
     "agents/create_tests.toml",
-    "agents/create_package_tests.toml",
     "agents/package_test.toml"
 ]

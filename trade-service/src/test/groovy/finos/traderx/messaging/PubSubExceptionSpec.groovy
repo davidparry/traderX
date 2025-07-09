@@ -4,6 +4,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Title
 import spock.lang.Unroll
+import java.util.Collections
 
 @Title("PubSubException Tests")
 @Subject(PubSubException)
@@ -208,13 +209,15 @@ class PubSubExceptionSpec extends Specification {
 
     def "should handle concurrent exception creation"() {
         given: "multiple threads creating exceptions"
-        def exceptions = []
+        def exceptions = Collections.synchronizedList([])
         def threads = []
 
         when: "creating exceptions concurrently"
         (1..10).each { i ->
             def thread = Thread.start {
-                exceptions << new PubSubException("Concurrent exception $i")
+                synchronized(exceptions) {
+                    exceptions << new PubSubException("Concurrent exception $i")
+                }
             }
             threads << thread
         }
